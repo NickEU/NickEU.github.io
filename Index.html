@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Minesweeper</title>
+<style>
+  #container {
+    text-align:center;
+    
+  }
+  p    {color:green;}
+  #gameField {
+    width: 70%;
+    text-align: center;
+    margin: auto;
+    /*border: 10px solid gray;*/
+    vertical-align: middle;
+    display: table;
+  }
+  .fieldCell {
+    /*background-color: #008CBA;*/
+    border: 1px solid black;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    /*float: left;*/
+    font-size: 12px;
+    display: block;
+    margin: auto;
+    padding: 0 0 0 0;
+    display: table-cell;
+    vertical-align: middle;
+    
+  }
+</style>
+</head>
+<body>
+
+<div id = "container">
+  <div id = "menu">
+    <p>Minesweeper</p>
+    <p>Hold the left mouse button for 0.5 seconds to mark the potential bomb locations.</p>
+    <button id = "newGame">New Game</button>
+    <form action="">
+      <input type="radio" name="diff" value="Easy"> Easy
+      <input type="radio" name="diff" value="Normal" checked> Normal
+      <input type="radio" name="diff" value="Hard"> Hard
+    </form>
+  </div>
+  <div id = "gameField">
+
+  </div>
+</div>
+
+<script>
+
+function btnClicked() {
+  if (game.gameState === 0)
+    return;
+  clearTimeout(clickCtrl.hold);
+
+  if (clickCtrl.noClick === true) {
+    clickCtrl.noClick = false;
+    return;
+  }
+
+  if (this.firstChild.nodeValue === "B") {
+    gameOver();
+    return;
+  }
+
+  function gameOver() {
+    game.gameState = 0;
+    revealField();
+    alert("Oops! Game Over!");
+  }
+
+  function revealField(){
+    var nodes = gameField.getElementsByTagName("BUTTON");
+    for (i = 0; i < nodes.length; i++) {
+      if (nodes[i].firstChild.nodeValue === "B") {
+        nodes[i].style.color = "red";
+        nodes[i].style.backgroundColor = "gray";
+      }
+      else {
+        reveal(nodes[i]);
+      }
+      
+    }
+    
+  }
+  var revealQueue = [] , revealIds = [];
+
+  if (this.firstChild.nodeValue === "")  {
+    revealQueue.push(this);
+    while (revealQueue.length)
+      revealEmptyCells(revealQueue);
+  }
+  else 
+    reveal(this);
+
+  function reveal(btn) {
+    btn.style.color = "black";
+    btn.style.backgroundColor = "white";
+  }
+
+  function revealEmptyCells(queue) {
+
+    var btn = queue.shift();
+    reveal(btn);
+    revealIds.push(btn.id);
+
+    var idArray = btn.id.split(",");
+
+    for (var i = 0; i < idArray.length; i++) {
+      idArray[i] = parseInt(idArray[i], 10);
+    }
+
+
+    var upperRow = idArray[0] - 1, botRow = idArray[0] + 1, maxRow = game.diffArr[0] - 1;
+    var leftCol = idArray[1] - 1; rightCol = idArray[1] + 1, maxCol = game.diffArr[1] - 1;
+    if (upperRow >= 0) {
+      emptyOrNot(document.getElementById(upperRow + "," + idArray[1]));
+      if (leftCol >= 0) 
+        emptyOrNot(document.getElementById(upperRow + "," + leftCol));
+      if (rightCol <= maxCol)
+        emptyOrNot(document.getElementById(upperRow + "," + rightCol));
+    }
+
+    if (leftCol >= 0)
+      emptyOrNot(document.getElementById(idArray[0] + "," + leftCol));
+    if (rightCol <= maxCol)
+      emptyOrNot(document.getElementById(idArray[0] + "," + rightCol));
+
+    if (botRow <= maxRow) {
+      emptyOrNot(document.getElementById(botRow + "," + idArray[1]));
+      if (leftCol >= 0) 
+        emptyOrNot(document.getElementById(botRow + "," + leftCol));
+      if (rightCol <= maxCol)
+        emptyOrNot(document.getElementById(botRow + "," + rightCol));
+    }
+
+    function emptyOrNot (btn) {
+      if (btn.firstChild.nodeValue !== "")
+        reveal(btn);
+      else if (revealIds.indexOf(btn.id) === -1)
+        revealQueue.push(btn);
+    }
+
+
+  }
+
+
+}
+
+function ClickControl () {
+  this.noClick = false;
+  this.hold;
+}
+
+function btnMouseDown() {
+  //alert("test!");
+  var btn = this;
+  clickCtrl.hold = setTimeout(recognizeHold, 500);
+  function recognizeHold() {
+    if (btn.style.backgroundColor === "white")
+      return;
+    btn.style.backgroundColor = "yellow";
+    clickCtrl.noClick = true;
+  }
+}
+
+
+
+function NewGame () {
+  this.gameState = 1;
+  this.diffArr = this.diff;
+  this.destroy = function() {
+    while (gameField.firstChild)
+      gameField.removeChild(gameField.firstChild);
+  };
+  this.destroy();
+
+
+};
+
+NewGame.prototype = {
+  get diff () {
+    function getDifficulty() {
+      var radioBtns = document.getElementsByName("diff");
+      for (var i = 0; i < radioBtns.length; i++) {
+        if (radioBtns[i].checked) {
+          var diff = radioBtns[i].value;
+          break;
+        }
+      }
+      switch (diff) {
+        case "Easy":
+          return [9, 9, 10]; // number of rows, columns, bombs
+        case "Normal":
+          return [16, 16, 40];
+        case "Hard":
+          return [16, 30, 99];
+      }
+    }
+    return getDifficulty();
+  }
+};
+
+NewGame.prototype.drawField = function(arr, fieldArray) {
+    var row = arr[0], col = arr[1];
+    for (var j = 0; j < row; j++) {
+      for (var i = 0; i < col; i++) {
+        var btn = document.createElement("button");
+        btn.className="fieldCell";
+        btn.id = j + "," + i;
+        if (fieldArray[j][i] === 0) {
+          fieldArray[j][i] = "";
+        }      
+        var tBtn = document.createTextNode(fieldArray[j][i]); 
+        btn.appendChild(tBtn); 
+        btn.style.color = "transparent";
+        btn.style.backgroundColor = "aqua";
+        btn.addEventListener('click', btnClicked, false);
+        btn.addEventListener('mousedown', btnMouseDown, false);                             
+        gameField.appendChild(btn);
+    
+      }
+      gameField.appendChild(document.createElement("br"));
+    }
+};  
+  
+
+var newGameBtn = document.getElementById("newGame");
+var game;
+var clickCtrl;
+newGameBtn.addEventListener('click', function() {
+  game = new NewGame;
+  clickCtrl = new ClickControl;
+  var arr = createArray(game.diffArr);
+  game.drawField(game.diffArr, arr);
+  //console.log(arr);
+}, false);
+
+
+
+function createArray(arr) { //creating an array which serves as a minefield
+  var row = arr[0], column = arr[1], bombs = arr[2];
+  var array = [];
+  for (var j = 0; j < row; j++) {
+    array[j] = [];
+    for (var i = 0; i < column; i++)
+      array[j][i] = 0;
+  }
+  return addBombs(bombs, array);
+}
+
+function addBombs(qty, array) { //seeding bombs unto the field
+  var maxRow = array.length - 1;
+  var maxCol = array[0].length - 1;
+  var min = 0;
+  for (var i = 0; i < qty; ) {
+    var row = Math.floor(Math.random() * (maxRow - min + 1)) + min;
+    var column = Math.floor(Math.random() * (maxCol - min + 1)) + min;
+    if (array[row][column] !== "B") {
+      array[row][column] = "B";
+      setupField(row,column,array);
+      i++;
+    }
+  }
+  return array;  
+}
+
+function setupField(row, column, array) { // doing +1 on cells adjacent to bombs
+  function isaNumber(val) { // can use Number.isNaN() as an alternative
+    return typeof val === "number";
+  }
+  var maxRowIndex = array.length - 1;
+  var maxColIndex = array[row].length - 1;
+
+  if (row - 1 >= 0) { // upper row
+    if (column - 1 >= 0 && isaNumber(array[row - 1][column - 1]))
+      array[row-1][column-1]++;
+    if (isaNumber(array[row - 1][column])) 
+      array[row - 1][column]++;
+    if (column + 1 <= maxColIndex && isaNumber(array[row - 1][column + 1]))
+      array[row - 1][column + 1]++;
+  }
+    
+  if (column - 1 >= 0 && isaNumber(array[row][column - 1])) // middle row
+    array[row][column - 1]++;
+  if (column + 1 <= maxColIndex && isaNumber(array[row][column + 1]))
+    array[row][column + 1]++;
+        
+  if (row + 1 <= maxRowIndex) { // bottom row
+    if (column - 1 >= 0 && isaNumber(array[row + 1][column - 1]))
+      array[row + 1][column - 1]++;
+    if (isaNumber(array[row + 1][column]))
+      array[row + 1][column]++;
+    if (column + 1 <= maxColIndex && isaNumber(array[row + 1][column + 1]))
+      array[row + 1][column + 1]++;
+  }
+}
+
+
+
+</script>
+</body>
+</html>
+
+
