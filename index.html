@@ -39,6 +39,7 @@
   <div id = "menu">
     <p>Minesweeper</p>
     <p>Hold the left mouse button for 0.5 seconds to mark the potential bomb locations.</p>
+    <p id = "gameInfo"></p>
     <button id = "newGame">New Game</button>
     <form action="">
       <input type="radio" name="diff" value="Easy"> Easy
@@ -69,6 +70,7 @@ function btnClicked() {
   }
 
   function gameOver() {
+    document.getElementById("gameInfo").innerHTML = "Get rekt!";
     game.gameState = 0;
     revealField();
     alert("Oops! Game Over!");
@@ -155,9 +157,13 @@ function btnClicked() {
     gameWon();
 
   function gameWon () {
+    document.getElementById("gameInfo").innerHTML = "You won!";
     game.gameState = 0;
     alert("Good job! You win! ;)")
   }
+
+  document.getElementById("gameInfo").innerHTML = "Bomb-free cells to uncover: " + (game.maxCells - game.revealedIds.length) 
+  + " Bombs on the field: " + game.diffArr[2];
 
 
 }
@@ -253,6 +259,8 @@ newGameBtn.addEventListener('click', function() {
   clickCtrl = new ClickControl;
   var arr = createArray(game.diffArr);
   game.drawField(game.diffArr, arr);
+  document.getElementById("gameInfo").innerHTML = "Bomb-free cells to uncover: " + (game.maxCells - game.revealedIds.length) 
+  + " Bombs on the field: " + game.diffArr[2];
   //console.log(arr);
 }, false);
 
