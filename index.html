@@ -101,6 +101,8 @@ function btnClicked() {
   function reveal(btn) { // reveal a button
     btn.style.color = "black";
     btn.style.backgroundColor = "white";
+    if (game.revealedIds.indexOf(btn.id) === -1)
+      game.revealedIds.push(btn.id);
   }
 
   function revealEmptyCells(queue) {
@@ -149,6 +151,14 @@ function btnClicked() {
 
   }
 
+  if (game.revealedIds.length === game.maxCells) // if all the bomb-free cells are revealed
+    gameWon();
+
+  function gameWon () {
+    game.gameState = 0;
+    alert("Good job! You win! ;)")
+  }
+
 
 }
 
@@ -164,7 +174,10 @@ function btnMouseDown() {
   function recognizeHold() {
     if (btn.style.backgroundColor === "white") // if clicked cell = already revealed, do nothing
       return;
-    btn.style.backgroundColor = "yellow";
+    if (btn.style.backgroundColor === "yellow") // make sure it works as a toggle so you can cancel your "mark"
+      btn.style.backgroundColor = "aqua";
+    else
+      btn.style.backgroundColor = "yellow";
     clickCtrl.noClick = true;
   }
 }
@@ -174,6 +187,8 @@ function btnMouseDown() {
 function NewGame () {
   this.gameState = 1; // game over = 0, game in progress = 1
   this.diffArr = this.diff; // get the difficulty from radio buttons
+  this.maxCells = this.diffArr[0] * this.diffArr[1] - this.diffArr[2]; // qty of cells to open to win the game
+  this.revealedIds = []; // keep track of open cells for the game won condition
   this.destroy = function() { // clear the field when starting a new game
     while (gameField.firstChild)
       gameField.removeChild(gameField.firstChild);
