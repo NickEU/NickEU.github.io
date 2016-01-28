@@ -58,12 +58,12 @@ function btnClicked() {
     return;
   clearTimeout(clickCtrl.hold);
 
-  if (clickCtrl.noClick === true) {
+  if (clickCtrl.noClick === true) { // if mousedown activated
     clickCtrl.noClick = false;
     return;
   }
 
-  if (this.firstChild.nodeValue === "B") {
+  if (this.firstChild.nodeValue === "B") { // if clicked a cell with a bomb
     gameOver();
     return;
   }
@@ -74,7 +74,7 @@ function btnClicked() {
     alert("Oops! Game Over!");
   }
 
-  function revealField(){
+  function revealField(){ // reveal the whole field when the game is over
     var nodes = gameField.getElementsByTagName("BUTTON");
     for (i = 0; i < nodes.length; i++) {
       if (nodes[i].firstChild.nodeValue === "B") {
@@ -88,34 +88,34 @@ function btnClicked() {
     }
     
   }
-  var revealQueue = [] , revealIds = [];
+  var revealQueue = [] , revealIds = []; // data structures to store buttons/button IDs in
 
-  if (this.firstChild.nodeValue === "")  {
+  if (this.firstChild.nodeValue === "")  { 
     revealQueue.push(this);
-    while (revealQueue.length)
-      revealEmptyCells(revealQueue);
+    while (revealQueue.length) // while there are still empty cells to reveal
+      revealEmptyCells(revealQueue); // reveak the next empty cell
   }
   else 
     reveal(this);
 
-  function reveal(btn) {
+  function reveal(btn) { // reveal a button
     btn.style.color = "black";
     btn.style.backgroundColor = "white";
   }
 
   function revealEmptyCells(queue) {
 
-    var btn = queue.shift();
+    var btn = queue.shift(); // get the first button from the queue
     reveal(btn);
     revealIds.push(btn.id);
 
     var idArray = btn.id.split(",");
 
-    for (var i = 0; i < idArray.length; i++) {
+    for (var i = 0; i < idArray.length; i++) { // parse the IDs so i can reveal the adjacent cells
       idArray[i] = parseInt(idArray[i], 10);
     }
 
-
+    // MEGA BbIDLO KOD up ahead - checking if the neighbouring cells exist on the field, if they do - reveal
     var upperRow = idArray[0] - 1, botRow = idArray[0] + 1, maxRow = game.diffArr[0] - 1;
     var leftCol = idArray[1] - 1; rightCol = idArray[1] + 1, maxCol = game.diffArr[1] - 1;
     if (upperRow >= 0) {
@@ -139,9 +139,9 @@ function btnClicked() {
         emptyOrNot(document.getElementById(botRow + "," + rightCol));
     }
 
-    function emptyOrNot (btn) {
+    function emptyOrNot (btn) { // if the adjacent cell is empty = add it to the queue to reveal the cells adjacent to it later
       if (btn.firstChild.nodeValue !== "")
-        reveal(btn);
+        reveal(btn); // if it's not empty = just reveal it
       else if (revealIds.indexOf(btn.id) === -1)
         revealQueue.push(btn);
     }
@@ -152,7 +152,7 @@ function btnClicked() {
 
 }
 
-function ClickControl () {
+function ClickControl () { // controller to help distinguish mousedown from onclick events
   this.noClick = false;
   this.hold;
 }
@@ -160,9 +160,9 @@ function ClickControl () {
 function btnMouseDown() {
   //alert("test!");
   var btn = this;
-  clickCtrl.hold = setTimeout(recognizeHold, 500);
+  clickCtrl.hold = setTimeout(recognizeHold, 500); // timer to makke sure you can distinguish mousedown from onclick
   function recognizeHold() {
-    if (btn.style.backgroundColor === "white")
+    if (btn.style.backgroundColor === "white") // if clicked cell = already revealed, do nothing
       return;
     btn.style.backgroundColor = "yellow";
     clickCtrl.noClick = true;
@@ -172,9 +172,9 @@ function btnMouseDown() {
 
 
 function NewGame () {
-  this.gameState = 1;
-  this.diffArr = this.diff;
-  this.destroy = function() {
+  this.gameState = 1; // game over = 0, game in progress = 1
+  this.diffArr = this.diff; // get the difficulty from radio buttons
+  this.destroy = function() { // clear the field when starting a new game
     while (gameField.firstChild)
       gameField.removeChild(gameField.firstChild);
   };
@@ -184,7 +184,7 @@ function NewGame () {
 };
 
 NewGame.prototype = {
-  get diff () {
+  get diff () { // getter to grab the difficulty from radio buttons
     function getDifficulty() {
       var radioBtns = document.getElementsByName("diff");
       for (var i = 0; i < radioBtns.length; i++) {
@@ -193,7 +193,7 @@ NewGame.prototype = {
           break;
         }
       }
-      switch (diff) {
+      switch (diff) { // can implement custom difficulty later, need UI adjustments to fit the text fields + validate the input
         case "Easy":
           return [9, 9, 10]; // number of rows, columns, bombs
         case "Normal":
@@ -214,7 +214,7 @@ NewGame.prototype.drawField = function(arr, fieldArray) {
         btn.className="fieldCell";
         btn.id = j + "," + i;
         if (fieldArray[j][i] === 0) {
-          fieldArray[j][i] = "";
+          fieldArray[j][i] = ""; // empty cells
         }      
         var tBtn = document.createTextNode(fieldArray[j][i]); 
         btn.appendChild(tBtn); 
@@ -231,8 +231,8 @@ NewGame.prototype.drawField = function(arr, fieldArray) {
   
 
 var newGameBtn = document.getElementById("newGame");
-var game;
-var clickCtrl;
+var game; // game object
+var clickCtrl; // click controller
 newGameBtn.addEventListener('click', function() {
   game = new NewGame;
   clickCtrl = new ClickControl;
@@ -241,8 +241,8 @@ newGameBtn.addEventListener('click', function() {
   //console.log(arr);
 }, false);
 
-
-
+// suplemental functions below : started doing the project with them only, without the DOM part = decided to leave as is
+// prolly better off making them a part of the NewGame class later
 function createArray(arr) { //creating an array which serves as a minefield
   var row = arr[0], column = arr[1], bombs = arr[2];
   var array = [];
