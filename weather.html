@@ -25,22 +25,23 @@
 var temp = {};
 
 toggle.addEventListener('click', function() {
+  var tempText = document.getElementById("temp");
   if (temp.cDisplayed == 1) {
-    document.getElementById("temp").innerHTML = temp.f + " °F";
+    tempText.textContent = temp.f + " °F";
     temp.cDisplayed = 0;
   }
   else {
-    document.getElementById("temp").innerHTML = temp.c + " °C";
+    tempText.textContent = temp.c + " °C";
     temp.cDisplayed = 1;
   }
   
 }, false);
 
 function getWeather(response) {
-  document.getElementById("country").innerHTML = response.name;
+  document.getElementById("country").textContent = response.name;
   temp.c = response.main.temp;
   temp.f = temp.c * 9 / 5 + 32;
-  document.getElementById("temp").innerHTML = temp.c + " °C";
+  document.getElementById("temp").textContent = temp.c + " °C";
   temp.cDisplayed = 1;
   console.log(response);
 };
@@ -57,7 +58,6 @@ var locTag = document.createElement("script");
 locTag.src = 'http://ipinfo.io?callback=getLoc';
 
 document.getElementsByTagName("head")[0].appendChild(locTag);
-
 </script>
 </body>
 </html>
