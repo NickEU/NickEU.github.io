@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Local weather</title>
+<style>
+  #container {
+    text-align:center;
+    
+  }
+</style>
+</head>
+<body>
+
+<div id = "container">
+  <div id = "main">
+  <p>Local weather in <span id = "country"></span></p>
+  <p id = "temp"></p>
+  <button id = "toggle">F / C</button>
+  </div>
+  <div id = "footer">
+  </div>
+</div>
+
+<script>
+/*var HttpClient = function() {
+    this.get = function(aUrl, aCallback) {
+        var anHttpRequest = new XMLHttpRequest();
+        anHttpRequest.onreadystatechange = function() { 
+            if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200)
+                aCallback(anHttpRequest.responseText);
+        }
+
+        anHttpRequest.open( "GET", aUrl, true );            
+        anHttpRequest.send( null );
+    }
+}
+
+var geo = { };
+var aClient = new HttpClient();
+aClient.get('http://ipinfo.io/json', function(response) {
+    console.log(response);
+    //var location = response.loc.split(',');
+    //geo.lat = location[0];
+    //geo.lon = location[1];
+}); */
+
+//var geo = {};
+var temp = {};
+
+toggle.addEventListener('click', function() {
+  if (temp.cDisplayed == 1) {
+    document.getElementById("temp").innerHTML = temp.f + " °F";
+    temp.cDisplayed = 0;
+  }
+  else {
+    document.getElementById("temp").innerHTML = temp.c + " °C";
+    temp.cDisplayed = 1;
+  }
+  
+}, false);
+
+function getWeather(response) {
+  document.getElementById("country").innerHTML = response.name;
+  temp.c = response.main.temp;
+  temp.f = temp.c * 9 / 5 + 32;
+  document.getElementById("temp").innerHTML = temp.c + " °C";
+  temp.cDisplayed = 1;
+  console.log(response);
+};
+
+function getLoc(response) {
+  var geo = response.loc.split(',');
+  console.log(geo);
+  var weatherTag = document.createElement("script");
+  weatherTag.src = 'http://api.openweathermap.org/data/2.5/weather?lat=' + geo[0] + '&lon=' + geo[1] + '&units=metric&callback=getWeather&appid=80f8b2429407d4784a3e920826f54555';
+  document.getElementsByTagName("head")[0].appendChild(weatherTag);
+};
+
+var locTag = document.createElement("script");
+locTag.src = 'http://ipinfo.io?callback=getLoc';
+
+document.getElementsByTagName("head")[0].appendChild(locTag);
+
+
+
+
+/*navigator.geolocation.getCurrentPosition(function(position) {
+  if (position == undefined)
+    document.getElementById("main").innerHTML = "Geolocation disabled";
+  document.getElementById("main").innerHTML = position;
+  geo.lat = position.coords.latitude;
+  geo.lon = position.coords.longitude;
+  console.log(geo);
+}); */
+//document.getElementById("main").innerHTML = geo.lat;
+</script>
+</body>
+</html>
+
+
