@@ -22,29 +22,6 @@
 </div>
 
 <script>
-/*var HttpClient = function() {
-    this.get = function(aUrl, aCallback) {
-        var anHttpRequest = new XMLHttpRequest();
-        anHttpRequest.onreadystatechange = function() { 
-            if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200)
-                aCallback(anHttpRequest.responseText);
-        }
-
-        anHttpRequest.open( "GET", aUrl, true );            
-        anHttpRequest.send( null );
-    }
-}
-
-var geo = { };
-var aClient = new HttpClient();
-aClient.get('http://ipinfo.io/json', function(response) {
-    console.log(response);
-    //var location = response.loc.split(',');
-    //geo.lat = location[0];
-    //geo.lon = location[1];
-}); */
-
-//var geo = {};
 var temp = {};
 
 toggle.addEventListener('click', function() {
@@ -81,18 +58,6 @@ locTag.src = 'http://ipinfo.io?callback=getLoc';
 
 document.getElementsByTagName("head")[0].appendChild(locTag);
 
-
-
-
-/*navigator.geolocation.getCurrentPosition(function(position) {
-  if (position == undefined)
-    document.getElementById("main").innerHTML = "Geolocation disabled";
-  document.getElementById("main").innerHTML = position;
-  geo.lat = position.coords.latitude;
-  geo.lon = position.coords.longitude;
-  console.log(geo);
-}); */
-//document.getElementById("main").innerHTML = geo.lat;
 </script>
 </body>
 </html>
