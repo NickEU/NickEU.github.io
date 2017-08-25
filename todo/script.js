@@ -19,22 +19,23 @@ var todo = {
   
   toggleAll: function() {
     var allTogglesAreTrue = true;
-    
+   
     for (var i = 0; i < this.list.length; i++) {
-      if (this.list[i].completed === false) {
-        allTogglesAreTrue = false;
-        break;
-      }
+       if (this.list[i].completed === false) {
+         allTogglesAreTrue = false;
+         break;
+       }
     }
-    
-    if (allTogglesAreTrue === true)
+
+    if (allTogglesAreTrue)
       setAllToggles(this, false)
     else 
       setAllToggles(this, true)
 
     function setAllToggles(obj, value) {
-      for (var i = 0; i < obj.list.length; i++)
-        obj.list[i].completed = value;
+      obj.list.forEach(function(element){
+        element.completed = value;
+      });
     }
   },
   
@@ -70,15 +71,17 @@ var handlers = {
 var view = {
     updateCheckboxes: function() {
       var todoList = document.getElementById("todoList");
-      for ( var i = 0; i < todoList.childNodes.length; i++) {
-        var checkbox = todoList.childNodes[i].querySelector('[type="checkbox"]');
-        checkbox.checked = todo.list[i].completed;  
-      }    
+
+      todoList.childNodes.forEach(function (element, index) {
+        var checkbox = element.querySelector('[type="checkbox"]');
+        checkbox.checked = todo.list[index].completed;
+      });    
     },
   
     addNewLi: function() {
       var todoList = document.getElementById("todoList");
       var li = document.createElement('li');
+      li.id = todo.list.length - 1;
       view.addCheckbox(li);
       view.addTextNode(li);
       view.addDeleteBtn(li);
@@ -89,21 +92,12 @@ var view = {
       var checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
       checkbox.checked = todo.list[todo.list.length - 1].completed;
-      checkbox.addEventListener('click', function () {
-        handlers.toggleOne(view.findElNumber(this.parentNode));
-      });
       li.appendChild(checkbox);
     },
     
     addTextNode: function(li) {
       var todoText = document.createElement('span');
       var textNode = document.createTextNode(todo.list[todo.list.length - 1].todoText);
-      todoText.addEventListener('dblclick', function(){
-        var text = view.getChangedTodoValue(this.firstChild.nodeValue);
-        var elNumber = view.findElNumber(this.parentNode);
-        this.firstChild.nodeValue = text;
-        handlers.changeItem(elNumber, text);
-      });
       todoText.appendChild(textNode);
       li.appendChild(todoText);
     },
@@ -111,13 +105,37 @@ var view = {
     addDeleteBtn: function(li) {
       var delButton = document.createElement('button');
       delButton.textContent = 'X';
-      delButton.addEventListener('click', function () {
-        handlers.delItem(view.findElNumber(this.parentNode));
-        this.parentNode.parentNode.removeChild(this.parentNode);
-      });
       li.appendChild(delButton);
     },
-    
+
+    handleUserClick: function(event) {
+      var clickedTag = event.target.tagName;
+      var li = event.target.parentNode;
+      if (clickedTag === "BUTTON")
+        view.handleDelBtnClick(li);
+      else if (clickedTag === "SPAN")
+        view.handleTextClick(event.target);
+      else if (clickedTag === "INPUT")
+        view.handleCheckboxClick(li);    
+    },
+
+    handleDelBtnClick: function(li) {
+      handlers.delItem(li.id);
+      li.parentNode.removeChild(li);
+      view.setProperIDs();
+    },
+
+    handleTextClick: function(span) {
+      var text = view.getChangedTodoValue(span.firstChild.nodeValue);
+      var id = span.parentNode.id;
+      span.firstChild.nodeValue = text;
+      handlers.changeItem(id,text);
+    },
+
+    handleCheckboxClick: function(li) {
+      handlers.toggleOne(li.id);
+    },
+
     getChangedTodoValue: function(todoText) {
       var userInput = prompt("Wanna change your list element?", todoText);
       
@@ -126,12 +144,12 @@ var view = {
       
       return userInput;
     },
-  
-    findElNumber: function (li) {
-      var list = li.parentNode;
-      for (var i = 0; i < list.childNodes.length; i++) {
-        if (list.childNodes[i] === li)
-          return i;
-      }
+    
+    setProperIDs: function() {
+      var list = document.getElementById("todoList");
+      for (var i = 0; i < list.childNodes.length; i++)
+        list.childNodes[i].id = i;
     }
   }
+
+  todoList.addEventListener('click', view.handleUserClick);
