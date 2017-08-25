@@ -142,6 +142,9 @@ var view = {
       if (userInput === "")
         return todoText;
       
+      if (userInput === null)
+        return todoText;
+      
       return userInput;
     },
     
