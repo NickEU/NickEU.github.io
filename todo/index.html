@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="style.css">
+  </head>
+
+  <body>
+    <div id="description">
+      <h3>This TODO list was made using vanilla JS following the latest trends in bidlocoding methodology.</h3>
+        <ul id="descriptionList">
+          <li> Type the text in the input field and press enter to add a new element to the list. </li> 
+          <li>Double click the TODO element text to edit that particular element</li>
+          <li>V = "toggle all checkboxes" X = "delete element"</li>
+        </ul>
+      <br>
+    </div>
+  
+    <div id="todoContainer">
+      <button onclick="handlers.toggleAll()">V</button>
+      <input id="inputField" type="text" onchange="handlers.addItem()" placeholder = "What do you want to do?" autofocus>
+      <div id="outputField">
+        <ul id="todoList"></ul>
+      </div>
+    </div>
+    
+    <script src="script.js"></script>
+  </body>
+
+</html>

@@ -1,0 +1,16 @@
+#description {
+  text-align: center;
+}
+
+#descriptionList {
+  list-style-type: none;
+}
+
+#todoContainer {
+  text-align: center;
+}
+
+#todoList {
+  list-style-position: inside;
+  list-style-type: decimal;
+}
