@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+<head>
+  <link rel="stylesheet" href="style.css">
+  <title>TODO list</title>
+</head>
+
+<body>
+  <div id="uiContainer">
+    <input type="text" id="userInputField" onkeydown="handlers.processKbInput()"></input>
+    <div>
+      <input type="number" id="elIndexField"></input>
+    </div>  
+    <button onclick="handlers.toggleAll()">Toggle All</button>  
+  </div>  
+  <div id="divTextDisplay">
+    <h3 id="captionHeader"></h3>
+    <ul id="todoList"></ul>
+  </div>
+  <script src="app.js"></script>
+</body>

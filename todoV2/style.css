@@ -1,0 +1,29 @@
+#uiContainer {
+  text-align: center;
+}
+
+#divTextDisplay {
+  white-space: pre-line;
+  text-align: center;
+}
+#userInputField {
+  width: 300px;
+}
+
+#elIndexField {
+  width: 30px;
+  visibility: hidden;
+}
+
+#captionHeader {margin: auto;}
+
+#todoList {
+  display: inline-block;
+  margin: auto;
+}
+#todoList > li {
+  /* helps render spaces in JS strings */
+  white-space: pre-wrap; 
+
+  text-align: left;
+}
