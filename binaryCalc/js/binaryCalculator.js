@@ -36,7 +36,7 @@ handlers = {
         } else if (clickedBtn.id == 'btnClr') {
             view.clearDisplay();
         } else if (clickedBtn.className == 'operator') {
-            if (dataStorage.operator == undefined) {
+            if (dataStorage.operator == undefined && view.displayDiv.textContent != '') {
                 dataStorage.operator = clickedBtn.id.slice(3);
             } else {
                 return;
